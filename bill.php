@@ -1,158 +1,111 @@
 <?php 
-  require 'config.php';
-  $conn = connection();
-  $sql = "select * from product order by pro_name";
-  $data = $conn->query($sql);
-  $data1 = $conn->query($sql);
-  $ty_data = "SELECT * FROM type t inner join category c on t.ty_grp = c.cat_id order by ty_name ASC";
-  $ty_data = $conn->query($ty_data);
-  $conn=null;
-
+require 'config.php';
+$conn = connection();
+$sql = "select * from firm order by firm_name";
+$data = $conn->query($sql);
+$data1 = $conn->query($sql);
+$conn=null;
 ?>
-
-    <div id="form-bp1" tabindex="-1" role="dialog" class="modal fade colored-header colored-header-success">
-      <div class="modal-dialog custom-width">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button"  data-dismiss="modal" aria-hidden="true" class="close md-close"><span class="mdi mdi-close"></span></button>
-            <h3 class="modal-title"><strong>ADD NEW GROUP MEASUREMENT</strong></h3>
-          </div>
-          <div class="modal-body">
-            <div class="form-group">
-              <label>Measurement Name or Type</label>
-              <input type="text" id="ty_name" placeholder="enter measurement name or type" required="" class="form-control input-xs parsley-error">
-            </div>
-            <div class="form-group">
-              <label>Choose Group</label>
-               <select class="form-control input-xs" id="ty_grp" required="">
-                <option value="">Select group</option>                
-                <?php foreach ($data as $row) { ?>
-                  <option value="<?php echo $row['cat_id']; ?>"><?php echo ucwords($row['cat_name']); ?></option>
-                <?php } ?>
-              </select>
-            </div>
-            
-                        
-          </div>
-          <div class="modal-footer">
-            <button type="button" data-dismiss="modal" class="btn btn-default md-close">Cancel</button>
-            <button type="submit" onclick="add_ty();" data-dismiss="modal" class="btn btn-success md-close">Proceed</button>
-          </div>
-        </div>
-      </div>
-    </div>
 <!-- MODAL CLOSE -->
 <div class="col-md-12">
-  <div class="col-md-12">
-    <div class="panel panel-full-color panel-full-warning">
-      <div class="panel-heading panel-heading-contrast" style="background-color: #3F51B5;"><strong>BILLING DETAILS</strong>
-        <div class="tools"><span class="icon mdi"></span></div><span class="panel-subtitle"></span>
-      </div>
-      <div class="panel-body" style="background-color: #303F9F;">
-        <div class="col-md-4">    
-          <label class="control-label panel-subtitle" style="color:white;">Search by Group</label>
-          <select class="form-control input-xs" id="sty_grp" required="" onchange="srch_ty();">
-            <option value="">Select group</option>                
-            <?php foreach ($data1 as $row) { ?>
-            <option value="<?php echo $row['cat_id']; ?>"><?php echo ucwords($row['cat_name']); ?></option>
-            <?php } ?>
-          </select>  
-        </div>
+	<div class="col-md-12">
+		<div class="panel panel-full-color panel-primary">
+			<div class="panel-heading panel-heading-contrast" style="background-color: #5d001e;"><strong>STOCK BILLING</strong>
+				<div class="tools"><span class="icon mdi"></span></div><span class="panel-subtitle"></span>
+			</div>
+		</div>
+	</div>
 
-        <div class="col-md-4">
-          <label class="control-label ">&nbsp;</label><br>
-          <div class="btn-group btn-space">
-            <button data-toggle="modal" data-target="#form-bp1" class="btn btn-space md-trigger btn-danger"><i class="icon icon-left mdi mdi-shape"></i> ADD MEASUREMENT</button>            
-          </div> 
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-sm-12">
-    <div class="panel panel-default panel-table">
-      <div class="panel-heading"><strong>Bill</strong>
-      </div>
-      <div class="panel-body">
-        <span id="srch_ty">
-        <table class="table table-condensed table-hover table-bordered table-striped">
-          <thead>
-            <tr>
-              <th><center>S. no.</center></th>
-              <th><center>Product Name</center></th>
-              <th><center>Size</center></th>
-              <th><center>CGST</center></th>
-              <th><center>Price</center></th>
-            </tr>
-          </thead>
-          <tbody style="color:black;">
-           <?php $s=0;
-           foreach ($ty_data as $row){ $s++; ?>
-            <tr>
-              <td><center><?php echo $s; ?></center></td>
-              <td><input type="text" name="pro_name" value=""></td>
-              <td><?php echo ucwords($row['cat_name']); ?></td>
-              <td><?php echo ucwords($row['cgst']); ?></td>
-               <td><?php echo ucwords($row['cat_des']); ?></td>
-            </tr>
-            <?php   } ?>
-            
+	<form type="POST" action="stock_billing.php" onsubmit="calc_amt();">
+		<div class="col-sm-12">
+			<div class="panel panel-default panel-table">
+				<div class="panel-heading "> 
 
-          </tbody>
-        </table>
-      </span>
-      </div>
-    </div>
-  </div>
+					<div class="col-md-6">
+						<div class="col-md-3">
+							<label style="font-size: 18px; "><strong>Name&nbsp;:</strong></label>
+						</div>
+						<div class="col-md-3" style="margin-left: -10%;">
+							<input type="text" name="bill_name" id="bill_name" value="" style="height: 25px;" required="">
+						</div>								
+					</div>
+					<div class="col-md-6" style="float: right;">
+						<div class="col-md-2">
+							<label style="font-size: 18px;">Tax :</label>
+						</div>
+						<div class="col-md-4">
+							<select class="form-control input-xs" id="pro_tax_type" required="">
+								<option value="">Select Tax</option>  								
+								<option value="1">CGST + SGST</option>
+								<option value="2">IGST</option>
+							</select>
+						</div>								
+					</div>       
+					<!-- div class="btn-group btn-space" style="float: right;">
+						<button class="btn btn-space md-trigger btn-danger" onclick="printDiv('printableArea');"><i class="icon icon-left mdi mdi-assignment"></i>&nbsp;Print</button>            
+					</div> -->         
+				</div>
+				<div class="panel-body">
+					<span id="srch_ty">
+						
+						<table class="table table-condensed table-hover table-bordered table-striped">
+							<thead>
+								<tr>
+									<th><center>S. no.</center></th>
+									<th><center>Firm</center></th>
+									<th><center>Description</center></th>
+									<th><center>Size</center></th>
+									<th><center>Qty Req.</center></th>
+									<th><center>Rate</center></th>
+									<th><center>Amount</center></th>
+								</tr>
+							</thead>
+							<tbody style="color:black;">
+								<tr id="fetch_d_0">
+
+								</tr>
+							</tbody>
+						</table>
+						
+						&nbsp;
+						<input type="hidden" name="count" id="count" value="0">
+						<br>
+						<!-- <span style="margin-left: 36px;">
+							<label>GST no.&nbsp;:
+								<input type="number" name="gst_no" id="gst_no" value="" >
+							</label>
+							<label>Transportation Charge&nbsp;:
+								<input type="number" name="trans_chg" id="trans_chg" value="" >
+							</label>
+							<label>Transportation no.&nbsp;:
+								<input type="text" name="trans_no" id="trans_no" value="" >
+							</label>
+						</span> -->
+						<br>
+						<input type="hidden" name="total_amt" id="total_amt" value="" required="">
+						<input type="hidden" name="bill_type" value="1">
+						<!-- <input type="submit" class="btn btn-space md-trigger btn-danger" name=""> -->
+						<div class="col-md-12">
+							<div class="col-md-6">
+								<div class="col-md-5">
+									<label style="font-size: 18px; ">Transport Charge&nbsp;:</label>
+								</div>
+								<div class="col-md-1">
+									<input type="text" name="tr_amt" id="tr_amt" class="form-control input-xs" value="0" style="width: 100px;" >
+								</div>								
+							</div>
+							<div class="col-md-2" style="margin-left: -12%">
+								<a class="btn btn-space md-trigger btn-warning" onclick="add_row();" style="float: right;"><i class="icon icon-left mdi mdi-plus"></i>&nbsp;ADD PRODUCT</a>
+							</div>
+							<div class="col-md-2">
+								<button type="submit" style="width:146px;" class="btn btn-space md-trigger btn-success" formtarget="_blank"><i class="icon icon-left mdi mdi-assignment"></i>&nbsp;Print Bill</button> 
+							</div>
+						</div>						
+					</span>
+				</div>
+			</div>
+		</div>
+	</div>
+</form>
 </div>
 
-
-<script>
-  function callPro(id)
-  {
-    var pro = id;
-    // alert(id);
-    $.ajax({
-      type: "POST",
-      url: 'nav.php',
-      data: {pro:pro},
-      success:function(msg) {
-            // alert(msg);
-            $('#output').html(msg);
-         }
-    });
-  }
-</script>
-<script>
-  function add_ty()
-  {
-    var name = $('#ty_name').val();
-    var grp = $('#ty_grp').val();
-    // alert(grp);
-    $.ajax({
-      type: "POST",
-      url: 'ty_add.php',
-      data: {name:name,grp:grp},
-      success:function(msg) {
-            //alert(msg);
-            $('#srch_ty').html(msg);
-         }
-    });
-  }
-</script>
-<script>
-  function srch_ty()
-  {
-    var sname = $('#sty_name').val();
-    var sgrp = $('#sty_grp').val();
-    // alert(sname);
-    $.ajax({
-      type: "POST",
-      url: 'srch_ty.php',
-      data: {sname:sname,sgrp:sgrp},
-      success:function(msg) {
-            //alert(msg);
-            $('#srch_ty').html(msg);
-         }
-    });
-  }
-</script>

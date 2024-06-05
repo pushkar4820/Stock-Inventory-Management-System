@@ -6,14 +6,17 @@ $condition = "";
 
 $conn = connection();
 // echo $_POST['name']; die;
-if(isset($_POST['name']) && $_POST['name']!=""){
-	$condition.=" and p.pro_name like '".$_POST['name']."%'";
-}
+// if(isset($_POST['name']) && $_POST['name']!=""){
+// 	$condition.=" and p.pro_name like '".$_POST['name']."%'";
+// }
 if(isset($_POST['cat']) && $_POST['cat']!=""){
 	$condition.=" and p.pro_grpid = '".$_POST['cat']."'";
 }
-$sql = "SELECT * FROM product p inner join category c on c.cat_id=p.pro_grpid inner join type t on t.ty_id=p.pro_typeid 
-     WHERE 0=0 $condition ORDER BY pro_name ASC";
+if(isset($_POST['firm']) && $_POST['firm']!=""){
+	$condition.=" and p.pro_firmid = '".$_POST['firm']."'";
+}
+$sql = "SELECT * FROM product p inner join category c on c.cat_id=p.pro_grpid inner join type t on t.ty_id=p.pro_typeid inner join firm f on f.firm_id=p.pro_firmid
+     WHERE 0=0 $condition ORDER BY cat_name ASC";
 $data = $conn->query($sql);
 $conn=null;
 ?>
@@ -22,16 +25,19 @@ $conn=null;
 	<thead>
 		<tr>
 			<th><center>S. no.</center></th>
-			<th><center>Name</center></th>
-			<th><center>Description</center></th>
+			<!-- <th><center>Name</center></th> -->
+			<th><center>Firm</center></th>
+			<!-- <th><center>Description</center></th> -->
 			<th><center>Category</center></th>
 			<th><center>Type</center></th>
-			<th><center>Price</center></th>
+			<th><center>Stock Price</center></th>
+			<th><center>Seller Price</center></th>
 			<th><center>CGST</center></th>
-            <th><center>IGST</center></th>
-            <th><center>SGST</center></th>
+			<th><center>IGST</center></th>
+			<th><center>SGST</center></th>
 			<th><center>Quantity</center></th>
 			<th><center>Status</center></th>
+			<th><center>Edit</center></th>
 		</tr>
 	</thead>
 	<tbody style="color:black;">
@@ -39,14 +45,17 @@ $conn=null;
 		foreach ($data as $row){ $s++; ?>
 		<tr>
 			<td><center><?php echo $s; ?></center></td>
-			<td><?php echo ucwords($row['pro_name']); ?></td>
-			<td><?php echo ucwords($row['pro_des']); ?></td>
+			<!-- <td><?php echo ucwords($row['pro_name']); ?></td> -->
+			<td><?php echo ucwords($row['firm_name']); ?></td>
+			<!-- <td><?php echo ucwords($row['pro_des']); ?></td> -->
 			<td><?php echo ucwords($row['cat_name']); ?></td>
 			<td><?php echo ucwords($row['ty_name']); ?></td>
 			<td><?php echo ucwords($row['pro_price']); ?></td>
+			<td><input type="text" id="sell_price" value="<?php echo $row['pro_sell_price']; ?>" style="width: 80px; padding: 3px;" onkeyup="add_sell_price(this.value, this.id);">
+			</td>
 			<td><?php echo ucwords($row['cgst'])."%"; ?></td>
-            <td><?php echo ucwords($row['igst'])."%"; ?></td>
-            <td><?php echo ucwords($row['sgst'])."%"; ?></td>
+			<td><?php echo ucwords($row['igst'])."%"; ?></td>
+			<td><?php echo ucwords($row['sgst'])."%"; ?></td>
 			<td><?php echo ucwords($row['pro_qty']); ?></td>
 			<td><?php
 			if ($row['pro_qty'] > 0) {
@@ -55,6 +64,7 @@ $conn=null;
 				echo "<span style='color:red;'>Out of stock</span>";
 			}
 			?></td>
+			<td><center><button data-toggle="modal" data-target="#edit-product" class="btn btn-space md-trigger btn-danger" onclick="edit_pro(<?php echo $row['pro_id']; ?>);"><i class="icon icon-left mdi mdi-eyedropper"></i> EDIT</button></center></td>
 		</tr>
 		<?php   } ?>
 	</tbody>
