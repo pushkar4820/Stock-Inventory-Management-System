@@ -8,6 +8,7 @@ $conn=null;
 ?>
 <!-- MODAL CLOSE -->
 <div class="col-md-12">
++
 	<div class="col-md-12">
 		<div class="panel panel-full-color panel-primary">
 			<div class="panel-heading panel-heading-contrast" style="background-color: #5d001e;"><strong>STOCK BILLING</strong>
@@ -17,8 +18,8 @@ $conn=null;
 	</div>
 
 	<form type="POST" action="stock_billing.php" onsubmit="calc_amt();">
-		<div class="col-sm-12">
-			<div class="panel panel-default panel-table">
+		<div class="col-sm-12"> it is a form for billing the stoc it 
+			<div class="panel panel-default panel-table"> it is a panel for to stock 
 				<div class="panel-heading "> 
 
 					<div class="col-md-6">
@@ -41,9 +42,7 @@ $conn=null;
 							</select>
 						</div>								
 					</div>       
-					<!-- div class="btn-group btn-space" style="float: right;">
-						<button class="btn btn-space md-trigger btn-danger" onclick="printDiv('printableArea');"><i class="icon icon-left mdi mdi-assignment"></i>&nbsp;Print</button>            
-					</div> -->         
+					<!-- ...existing code... -->         
 				</div>
 				<div class="panel-body">
 					<span id="srch_ty">
@@ -70,21 +69,11 @@ $conn=null;
 						&nbsp;
 						<input type="hidden" name="count" id="count" value="0">
 						<br>
-						<!-- <span style="margin-left: 36px;">
-							<label>GST no.&nbsp;:
-								<input type="number" name="gst_no" id="gst_no" value="" >
-							</label>
-							<label>Transportation Charge&nbsp;:
-								<input type="number" name="trans_chg" id="trans_chg" value="" >
-							</label>
-							<label>Transportation no.&nbsp;:
-								<input type="text" name="trans_no" id="trans_no" value="" >
-							</label>
-						</span> -->
+						<!-- ...existing code... -->
 						<br>
 						<input type="hidden" name="total_amt" id="total_amt" value="" required="">
 						<input type="hidden" name="bill_type" value="1">
-						<!-- <input type="submit" class="btn btn-space md-trigger btn-danger" name=""> -->
+						<!-- ...existing code... -->
 						<div class="col-md-12">
 							<div class="col-md-6">
 								<div class="col-md-5">
