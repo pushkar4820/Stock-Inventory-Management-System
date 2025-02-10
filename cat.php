@@ -13,7 +13,9 @@
           <div class="modal-header">
             <button type="button" data-dismiss="modal" aria-hidden="true" class="close md-close"><span class="mdi mdi-close"></span></button>
             <h3 class="modal-title"><strong>ADD NEW CATEGORY</strong></h3>
-          </div>
+          </div>10
+
+
           <div class="modal-body">
             <div class="form-group">
               <label>Category Name</label>

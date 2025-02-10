@@ -1,4 +1,5 @@
 <?php 
+
 require 'config.php';
 $conn = connection();
 $sql = "select * from firm order by firm_name";

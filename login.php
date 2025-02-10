@@ -2,44 +2,42 @@
 session_start();
 require 'config.php';
 $conn = connection();
-$_SESSION["username"] = $_POST['username'];
-$_SESSION["password"] = $_POST['password'];
-	// session_start();
-// echo $_SESSION["username"];
-// die;
 
-$sql="SELECT * from users where username='".$_SESSION['username']."'
- and password='".$_SESSION['password']."'";
-$result=$conn->query($sql);
-// foreach ($result as $row) {
-// 			echo $row['user_id']."<br>";
-// 			echo $row['username']."<br>";
-// 			echo $row['password']."<br>";
-// 		}
-		
-// die;
-if ( $result->rowCount() == 0 ) {
-	// header("location: login.html");
+// Store the posted username in session variables
+$_SESSION["username"] = $_POST['username'];
+$password = $_POST['password']; // Store the posted password in a local variable
+
+// Prepare and execute the query to check if the user exists in the database
+$sql = "SELECT * FROM users WHERE username = :username";
+$stmt = $conn->prepare($sql);
+$stmt->bindParam(':username', $_SESSION['username']);
+$stmt->execute();
+
+// If no matching user is found, show an alert and redirect to index.html
+if ($stmt->rowCount() == 0) {
 	echo "<script>alert('Incorrect username or password');
 	document.location='index.html'
 	</script>";
 }
-elseif ( $result->rowCount() > 0 ) {
-	if ($_SESSION["username"]=='admin'&&$_SESSION["password"]=='neola') {
-
-		header('location:login.html');
-	}
-	elseif (isset($_SESSION["username"])&&isset($_SESSION["password"])) {
-		foreach ($result as $row) {
-			echo $row['user_id']."<br>";
-			echo $row['username']."<br>";
-			echo $row['password']."<br>";
+// If a matching user is found
+elseif ($stmt->rowCount() > 0) {
+	$user = $stmt->fetch(PDO::FETCH_ASSOC);
+	// Verify the password
+	if (password_verify($password, $user['password'])) {
+		// If the user is admin, redirect to login.html
+		if ($_SESSION["username"] == 'admin') {
+			header('location:login.html');
 		}
-		// include 'header.php';
-		header("location: index.php");
-		// include 'footer.php';
+		// If the user is not admin, display user details and redirect to index.php
+		else {
+			echo $user['user_id']."<br>";
+			echo $user['username']."<br>";
+			header("location: index.php");
+		}
+	} else {
+		echo "<script>alert('Incorrect username or password');
+		document.location='index.html'
+		</script>";
 	}
-	
 }
-
 ?>

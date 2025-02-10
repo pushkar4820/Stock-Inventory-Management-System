@@ -1,15 +1,22 @@
 <?php
 
 $today = date("Y-m-d");
-$yes = date('Y-m-d',strtotime("-3 days"));
+$yes = date('Y-m-d',strtotime("-7 days")); // Changed from 3 days to 7 days
 require 'config.php';
 
 $conn = connection();
 
-$sql = "SELECT * FROM bill_records WHERE bill_entrydt BETWEEN '$today' AND '$yes'";
+$sql = "SELECT bill_entrydt, SUM(income) as total_income FROM bill_records WHERE bill_entrydt BETWEEN '$yes' AND '$today' GROUP BY bill_entrydt";
 $data = $conn->query($sql);
 
-$x = "";
+$dates = [];
+$incomes = [];we
+
+
+while ($row = $data->fetch_assoc()) {
+    $dates[] = $row['bill_entrydt'];
+    $incomes[] = $row['total_income'];
+}
 
 ?>
 
@@ -26,19 +33,15 @@ $x = "";
 	</div>
 </div>
 
-
-
 <script>
 var ctx = document.getElementById("myChart").getContext('2d');
 var myChart = new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: [
-        			"Red", "Blue", "Yellow", "Green", "Purple", "Orange"
-        		],
+        labels: <?php echo json_encode($dates); ?>,
         datasets: [{
             label: '# of Income',
-            data: [12, 19, 3, 5, 2, 3],
+            data: <?php echo json_encode($incomes); ?>,
             backgroundColor: [
                 'rgba(255, 99, 132, 0.2)',
                 'rgba(54, 162, 235, 0.2)',
@@ -70,3 +73,4 @@ var myChart = new Chart(ctx, {
 });
 </script>
 
++
